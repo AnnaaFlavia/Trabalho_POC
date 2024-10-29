@@ -1,0 +1,142 @@
+package com.example.torcidaconectada
+
+import android.content.Intent
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import android.widget.Button
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+
+//Dados de um Time
+data class Time(
+    val nome: String,
+    val pontos: Int,
+    val jogos: Int
+)
+
+//Dados de um Jogo
+data class Jogo(
+    val timeCasa: String,
+    val timeVisitante: String,
+    val golsCasa: Int,
+    val golsVisitante: Int,
+    val data: String
+)
+
+//Tela inicial
+class SplashActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_splash)
+
+        val buttonEnter = findViewById<Button>(R.id.buttonEnter)
+        buttonEnter.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+    }
+}
+
+//Tela de Classificação
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val recyclerView: RecyclerView = findViewById(R.id.recyclerViewClassificacao)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        val times = listOf(
+            Time("Flamengo", 65, 31),
+            Time("Palmeiras", 63, 31)
+        )
+
+        val adapter = TimeAdapter(times)
+        recyclerView.adapter = adapter
+
+        val btnResultados: Button = findViewById(R.id.btnResultados)
+        btnResultados.setOnClickListener {
+            val intent = Intent(this, ResultadosActivity::class.java)
+            startActivity(intent)
+        }
+    }
+}
+
+//Tela de Resultados da Rodada
+class ResultadosActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_resultados)
+
+        val recyclerView: RecyclerView = findViewById(R.id.recyclerViewResultados)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        val jogos = listOf(
+            Jogo("Palmeiras", "Corinthians", 2, 1, "31/10"),
+            Jogo("Flamengo", "Grêmio", 1, 1, "01/11")
+        )
+
+        val adapter = JogoAdapter(jogos)
+        recyclerView.adapter = adapter
+
+        val btnHome: Button = findViewById(R.id.btnHome)
+        btnHome.setOnClickListener {
+            finish()
+        }
+    }
+}
+
+//lista de Times
+class TimeAdapter(private val times: List<Time>) : RecyclerView.Adapter<TimeAdapter.TimeViewHolder>() {
+
+    class TimeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val nomeTime: TextView = itemView.findViewById(R.id.nomeTime)
+        val pontosTime: TextView = itemView.findViewById(R.id.pontosTime)
+        val jogosTime: TextView = itemView.findViewById(R.id.jogosTime)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_time, parent, false)
+        return TimeViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: TimeViewHolder, position: Int) {
+        val time = times[position]
+        holder.nomeTime.text = time.nome
+        holder.pontosTime.text = "${time.pontos} pts"
+        holder.jogosTime.text = "${time.jogos} J"
+    }
+
+    override fun getItemCount() = times.size
+}
+
+//lista de Jogos
+class JogoAdapter(private val jogos: List<Jogo>) : RecyclerView.Adapter<JogoAdapter.JogoViewHolder>() {
+
+    class JogoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val timeCasa: TextView = itemView.findViewById(R.id.timeCasa)
+        val golsCasa: TextView = itemView.findViewById(R.id.golsCasa)
+        val golsVisitante: TextView = itemView.findViewById(R.id.golsVisitante)
+        val timeVisitante: TextView = itemView.findViewById(R.id.timeVisitante)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JogoViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_jogo, parent, false)
+        return JogoViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: JogoViewHolder, position: Int) {
+        val jogo = jogos[position]
+        holder.timeCasa.text = jogo.timeCasa
+        holder.golsCasa.text = jogo.golsCasa.toString()
+        holder.golsVisitante.text = jogo.golsVisitante.toString()
+        holder.timeVisitante.text = jogo.timeVisitante
+    }
+
+    override fun getItemCount() = jogos.size
+}
